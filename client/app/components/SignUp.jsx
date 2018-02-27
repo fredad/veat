@@ -1,0 +1,67 @@
+import React, { Component } from 'react';
+import { Link, browserHistory } from 'react-router';
+
+export default class SignUp extends Component {
+    constructor(props) {
+        super(props);
+        this.state = {
+        };
+    }
+    signUpForm(e){
+    	e.preventDefault();
+    	var newUser = {
+    		name: this.refs.name.value,
+    		username: this.refs.username.value,
+    		password: this.refs.password.value
+    	}
+        fetch('/api/sign-up', {
+            method: 'post',
+            body: JSON.stringify(newUser),
+            headers: {
+                'content-type': 'application/json',
+                'accept': 'application/json'
+            },
+            credentials: 'same-origin'
+        }).then((response) => response.json())
+        .then((results) => {
+        	browserHistory.push("/");
+        });
+    }
+	componentWillMount(){
+        fetch('/api/signed-in', {
+            headers: {
+                'content-type': 'application/json',
+                'accept': 'application/json'
+            },
+            credentials: 'same-origin'
+        }).then((response) => response.json())
+        .then((results) => {
+            if(results.message){
+                if(results.message !== "no req.user"){
+                    browserHistory.push("/home")
+                }
+            }
+        });
+	}
+  	render() {
+	    return (
+	        <div>
+				<div className="text-center">
+		        	<h5>Sign Up</h5>
+					<div className="well center-block" id="sign-in-div">
+						<form id="sign-in-form" onSubmit={this.signUpForm.bind(this)}>
+							<label>Name</label><br></br>
+							<input type="text" ref="name" /><br></br>
+							<label>Username</label><br></br>
+							<input type="text" ref="username" /><br></br>
+							<label>Password</label><br></br>
+							<input type="password" ref="password"/><br></br>
+							<input className="btn btn-danger" type="submit" />
+						</form>
+
+					</div>
+				</div>
+	        </div>
+	    );
+  	}
+};

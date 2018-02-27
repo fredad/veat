@@ -1,0 +1,53 @@
+/* Home Page */
+h1 {
+	color: blue;
+}
+
+.nav-links {
+	padding: 10px;
+}
+
+#sign-in-div {
+	width: 35%;
+}
+
+.bizcard {
+	position: relative;
+	border:1px dotted grey;
+	width: 100%;
+	display: inline-block;
+	margin:3px;
+	padding:3px;
+	border-radius: 5px;
+
+
+}
+
+.bizcard img {
+	width:300px;
+	float: left;
+}
+
+.bizcard p {
+	margin:10px;
+}
+
+.clearfix::after {
+    content: "";
+    clear: both;
+    display: table;
+}
+
+.selectedbizcard{
+	border:1px dotted grey;
+	width: 100%;
+	display: inline-block;
+	margin:3px;
+	padding:3px;
+	border-radius: 5px;
+}
+
+.descArea {
+	display: inline-block;
+	padding-left:10px;
+}
