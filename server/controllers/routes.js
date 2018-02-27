@@ -67,6 +67,7 @@ module.exports = (app, passport) => {
 	app.post('/api/post-submission', (req,res) => {
 		if(req.body.title !== ''){
 			models.Invite.create({
+				userID:req.body.userID,
 				title: req.body.title,
 	            desc: req.body.desc,
 	            dateStart: req.body.dateStart,
@@ -99,6 +100,19 @@ module.exports = (app, passport) => {
 		});
 	});
 
+	app.get('/api/get-myInvite/:userID', (req,res) => {
+		models.Invite.findAll(
+			{
+		    	where: 
+		    	{
+		    		userID: req.params.userID
+		    	}
+		    }
+		).then(function(titles){
+			console.log(titles)
+			res.json(titles);
+		});
+	});
 
 	app.get('*', function(req,res){
 		res.sendFile(path.join(__dirname, './../../client/public/index.html'));

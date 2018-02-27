@@ -13,13 +13,36 @@ export default class Setup extends Component {
           selectedBiz:'',
           displaySelectedBiz:[],
           eventID:'',
-          isOpen:false
+          isOpen:false,
+          user:{}
         };
         this.addBiz = this.addBiz.bind(this);
     }
+
+    componentWillMount(){
+        fetch('/api/signed-in', {
+      headers: {
+                'content-type': 'application/json',
+                'accept': 'application/json'
+            },
+            credentials: 'same-origin'
+    }).then((response) => response.json())
+        .then((results) => {
+            if(results.message){
+                if(results.message !== "signed-in"){
+                    browserHistory.push("/")
+                } else {
+                  this.setState({
+                    user: results.user
+                  })
+                }
+            }
+        });
+  }
     handleSubmit(e){
         e.preventDefault();
         var newSubmission = {
+            userID:this.state.user.id,
             title: this.refs.title.value,
             desc: this.refs.desc.value,
             dateStart: this.refs.start.value,
@@ -37,6 +60,8 @@ export default class Setup extends Component {
         }).then(this.setState({
           isOpen:true
         }));
+        console.log(newSubmission)
+
     }
 
     yelpSearch(e){

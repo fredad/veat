@@ -3,8 +3,6 @@ import { Route } from "react-router";
 
 // Parent
 import Application from "./components/Application";
-// Children
-import Home from "./components/Home";
 import SignIn from "./components/SignIn";
 import SignUp from "./components/SignUp";
 import UserHome from "./components/UserHome";
