@@ -197,9 +197,11 @@ export default class Setup extends Component {
                   <p>http://xxxxxxx</p>
                 </ModalBody>
                 <ModalFooter>
+                <Link to="/home">
                   <button className='btn btn-default' onClick={this.hideModal.bind(this)}>
                     Close
                   </button>
+                  </Link>
                 </ModalFooter>
               </Modal>
 			</div>
