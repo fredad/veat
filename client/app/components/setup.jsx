@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import {Link} from 'react-router';
 import axios from 'axios';
+import Logout from './Logout';
 import {Modal, ModalHeader, ModalTitle, ModalClose, ModalBody, ModalFooter} from 'react-modal-bootstrap';
 
 require('dotenv').config({path:'../../../../.env'})
@@ -10,11 +11,16 @@ export default class Setup extends Component {
         super(props);
         this.state = {
         	biz:[],
-          selectedBiz:'',
+          selectedBiz:[],
           displaySelectedBiz:[],
           eventID:'',
           isOpen:false,
-          user:{}
+          user:{},
+          myInvite:{
+            id:0
+          },
+          myAllInvites:[]
+
         };
         this.addBiz = this.addBiz.bind(this);
     }
@@ -37,17 +43,36 @@ export default class Setup extends Component {
                   })
                 }
             }
-        });
+        }).then(()=>fetch(`/api/get-myInvite/${this.state.user.id}`, {
+            headers: {
+                'content-type': 'application/json',
+                'accept': 'application/json'
+            }
+        })).then((response) => response.json())
+        .then((results) => {
+          if(results.length>1){
+            this.setState({
+                myInvite:results.pop(),
+                myAllInvites:results
+            });
+
+        } else {
+          this.setState({
+            myInvite:{
+              id:1
+            }
+          })
+        }});
   }
     handleSubmit(e){
         e.preventDefault();
         var newSubmission = {
             userID:this.state.user.id,
+            host:this.state.user.name,
             title: this.refs.title.value,
             desc: this.refs.desc.value,
             dateStart: this.refs.start.value,
             dateEnd:this.refs.end.value,
-            foodType:this.refs.foodType.value,
             yelpBiz:this.state.selectedBiz
         }
         fetch('/api/post-submission', {
@@ -61,6 +86,7 @@ export default class Setup extends Component {
           isOpen:true
         }));
         console.log(newSubmission)
+
 
     }
 
@@ -96,13 +122,23 @@ export default class Setup extends Component {
 
     }
 
-    addBiz(business){
-        var newStuff = this.state.selectedBiz;    
-        if (newStuff!= ''){
-            newStuff = newStuff.concat(",",business.id)   
-        }
-            else newStuff = business.id
-        this.setState({selectedBiz:newStuff})
+    // addBiz(business){
+    //     var newStuff = this.state.selectedBiz;    
+    //     if (newStuff!= ''){
+    //         newStuff = newStuff.concat(",",business.id)   
+    //     }
+    //         else newStuff = business.id
+    //     this.setState({selectedBiz:newStuff})
+
+    //     var arrayvar = this.state.displaySelectedBiz.slice()
+    //     arrayvar.push(business)
+    //     this.setState({ displaySelectedBiz: arrayvar })
+    // }
+
+        addBiz(business){
+        var newStuff = this.state.selectedBiz.slice()
+        newStuff.push(business.id)
+        this.setState({ selectedBiz: newStuff })
 
         var arrayvar = this.state.displaySelectedBiz.slice()
         arrayvar.push(business)
@@ -114,6 +150,13 @@ export default class Setup extends Component {
           isOpen: false
         });
       };
+
+
+    componentDidUpdate(){
+        if(this.state.myInvite.id == 0){
+
+    }
+}
 
     render() {
         // if(this.state.biz){
@@ -139,47 +182,69 @@ export default class Setup extends Component {
               return (
                 <div className="selectedbizcard">
                 <a href={selectedBusiness.url}>
-                <li  key={index}>{selectedBusiness.name}</li>
+                <li  key={index}><a herf="#"> {selectedBusiness.name}</a></li>
                 </a>
                 </div>
               )
             
           })
-	    return (
 
-	    	<div className="container">
+        let appendMyInvites;
+        if(this.state.myAllInvites.length>0){
+        appendMyInvites = this.state.myAllInvites.map((invite,index) => {
+              return (
+
+                <li  key={index}>{invite.title}</li>
+              )
+            
+          })}
+	    return (
+        <div>
+      <nav role="navigation" className="navbar navbar-inverse navbar-embossed">
+        <div className="navbar-header">
+          <button data-target="#bs-example-navbar-collapse-7" data-toggle="collapse" className="navbar-toggle" type="button">
+            <span className="sr-only">Toggle navigation</span>
+            <span className="icon-bar"></span>
+            <span className="icon-bar"></span>
+            <span className="icon-bar"></span>
+          </button>
+          <a href="/" className="navbar-brand veatlogo">Veat</a>
+        </div>
+        <div id="bs-example-navbar-collapse-7" className="collapse navbar-collapse">
+          <p className="navbar-text">Group dinner made easy </p>
+          <ul className="nav navbar-nav navbar-left">
+        <li className="dropdown">
+          <a href="#" className="dropdown-toggle" data-toggle="dropdown">Manage invites <b className="caret"></b></a>
+          <span className="dropdown-arrow"></span>
+          <ul className="dropdown-menu">
+              {appendMyInvites}
+          </ul>
+        </li>
+        </ul>
+        <div className="nav navbar-nav navbar-right">
+        <span><p className="navbar-text">Hi, {this.state.user.name}</p>
+          <button className="btn btn-default navbar-btn btn-xs" type="button"><Logout/></button></span>
+        </div>
+        </div>
+      </nav>
+      <div className="container">
             <h2>Create Your Invite</h2>
+
 		        <form onSubmit={this.handleSubmit.bind(this)}>
                     <input placeholder="event title" type="textarea" name="title" ref="title"/>
-                    <p>Description</p> <br/>
-                    <div class="form-group">
+                    <div className="form-group">
                       <label htmlFor="desc">Description:</label>
                       <textarea className="form-control" rows="5" id="desc" name="desc" ref="desc"></textarea>
                     </div>
                     <p>Date Range</p> <br/>
                     <p>Between</p> <input type="date" name="start" ref="start" />
                     <p> and </p><input type="date" name="end" ref="end" />
-                    <span>
-                    <button className="btn primary">Choose Food Types</button>
-                    <span>      or      </span>
-                    <button className="btn primary">Choose Restaurants</button></span>
-                    <div className="foodtypeoptions" >
-                    <p>Food Type?</p>
-                    <div className="form-check form-check-inline">
-                    <input type="checkbox" name="foodType" ref="foodType" value="Italian"/>
-                    <label htmlFor="Italian">Italian</label>
-                    </div>
-                     <div className="form-check form-check-inline">
-                    <input type="checkbox" name="foodType" ref="foodType" value="Japanese"/>
-                    <label htmlFor="Japanese">Japanese</label>
-                    </div>
-                    </div>
                     <div>
                     <br/>
                     <p>Search ur Restaurants</p>
                     <input type="search" onChange={this.yelpSearch.bind(this)}/>
                     </div>
-                    <input className="btn btn-default" id="submit-this" type="submit"/>
+                    <input className="btn btn-primary" id="submit-this" type="submit"/>
             </form>
             <div className='selected'>
             <h5>You selected:</h5>
@@ -194,7 +259,7 @@ export default class Setup extends Component {
                   <ModalTitle>Now share the invite with your friends!</ModalTitle>
                 </ModalHeader>
                 <ModalBody>
-                  <p>http://xxxxxxx</p>
+                  <p>localhost:8000/invite/{this.state.myInvite.id}</p>
                 </ModalBody>
                 <ModalFooter>
                 <Link to="/home">
@@ -205,6 +270,7 @@ export default class Setup extends Component {
                 </ModalFooter>
               </Modal>
 			</div>
+      </div>
 	    );
   	}
 }

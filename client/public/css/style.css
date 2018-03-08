@@ -1,14 +1,35 @@
-/* Home Page */
-h1 {
-	color: blue;
+.veatlogo {
+	font-family: 'Pacifico', cursive;
+	font-weight: lighter;
+}
+.container {
+	box-shadow: 1px 1px 1px 1px grey;
+	margin-top: 50px;
+}
+.navbar-text {
+	font-style: italic;
 }
 
-.nav-links {
-	padding: 10px;
+.navbar{
+	position:fixed;
+	width: 100%;
+	z-index: 999;
+	top: 0;
+
 }
 
-#sign-in-div {
-	width: 35%;
+.veatlogobcolor {
+	color:#16a085;
+	text-align: center;
+}
+
+#sameline {
+	display: inline;
+	vertical-align: top;
+}
+
+#logoutli {
+	list-style-type: none;
 }
 
 .bizcard {
@@ -32,6 +53,15 @@ h1 {
 	margin:10px;
 }
 
+.login{
+	max-width: 650px;
+	margin:auto;
+	margin-top: 13%;
+}
+
+.span{
+    font-family: 'Open Sans', sans-serif !important;
+}
 .clearfix::after {
     content: "";
     clear: both;
@@ -60,3 +90,28 @@ h1 {
 	padding:3px;
 	border-radius: 5px;
 }
+
+.showOptions {
+	display: inline-block;
+    position: relative;
+    color: white;
+    float: left;
+
+}
+
+.showOptions img {
+	 width: 290px;
+}
+
+.hoverDesc {
+    position: absolute;
+    text-align: center;
+    width: 290px;
+    bottom: 0px;
+    background-color: rgba(169,169,169,0.6);
+}
+
+.hoverDesc a {
+	color: white;
+}
+

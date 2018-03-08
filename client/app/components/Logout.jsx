@@ -19,9 +19,8 @@ export default class Logout extends Component {
     }
   	render() {
 	    return (
-			<ul className="right">
-				<Link onClick={this.logoutUser.bind(this)}>Logout</Link>
-			</ul>
+				<li id="logoutli" onClick={this.logoutUser.bind(this)}>Log out</li>
+
 	    );
   	}
 };

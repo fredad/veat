@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { Link, browserHistory } from 'react-router';
+import Logout from './Logout';
 
 export default class SignIn extends Component {
     constructor(props) {
@@ -43,28 +44,70 @@ export default class SignIn extends Component {
             }
         });
 	}
-  	render() {
-	    return (
-	        <div>
-				<div className="text-center">
-		        	<h1>Veat</h1>
-		        	<h5>Please Sign in</h5>
-					<div className="well center-block" id="sign-in-div">
-						<form id="sign-in-form" onSubmit={this.signInForm.bind(this)}>
-							<label>Username</label><br></br>
-							<input type="text" ref="username" /><br></br>
-							<label>Password</label><br></br>
-							<input type="password" ref="password"/><br></br>
-							<input className="btn btn-danger" type="submit" />
 
-						</form>
-                        <br/>
-                        <span>Don't have an account? Please 
-                            <Link to="/sign-up">
-                                <span> sign up </span>
-                            </Link></span>
-					</div>
-				</div>
+    componentDidMount(){
+        fetch('/api/signed-in', {
+            headers: {
+                'content-type': 'application/json',
+                'accept': 'application/json'
+            },
+            credentials: 'same-origin'
+        }).then((response) => response.json())
+        .then((results) => {
+            if(results.message === "signed-in"){
+                browserHistory.push("/home")
+            }
+        });
+    }
+  	render() {
+        let imgUrl = './food-2.jepg'
+        var divStyle = {
+            backgroundImage: 'url('+imgUrl+')',
+            backgroundSize: 'cover',
+            overflow: 'hidden'
+        }
+
+	    return (
+
+	        <div style={{divStyle}}>   
+        <nav role="navigation" className="navbar navbar-inverse navbar-embossed">
+        <div className="navbar-header">
+          <button data-target="#bs-example-navbar-collapse-7" data-toggle="collapse" className="navbar-toggle" type="button">
+            <span className="sr-only">Toggle navigation</span>
+            <span className="icon-bar"></span>
+            <span className="icon-bar"></span>
+            <span className="icon-bar"></span>
+          </button>
+          <a href="/" className="navbar-brand veatlogo">Veat</a>
+        </div>
+        <div id="bs-example-navbar-collapse-7" className="collapse navbar-collapse">
+          <p className="navbar-text">Group dinners made easy </p>
+        </div>
+      </nav>
+ 
+      <div>
+      
+        <div className="login">
+        <p className="veatlogo veatlogobcolor"><font size="200">Veat</font></p>
+        <form onSubmit={this.signInForm.bind(this)}>
+          <div className="login-form">
+            <div className="form-group">
+              <input type="text" className="form-control login-field" placeholder="Enter your name" id="login-name" ref="username"/>
+              <label className="login-field-icon fui-user" for="login-name"></label>
+            </div>
+
+            <div className="form-group">
+              <input type="password" className="form-control login-field" placeholder="Password" id="login-pass" ref="password"/>
+              <label className="login-field-icon fui-lock" for="login-pass"></label>
+            </div>
+
+            <input className="btn btn-primary btn-lg btn-block"  type="submit" />
+            <a className="login-link" href="/signup">Don't have an account? Please sign up</a>
+          </div>
+          </form>
+        </div>
+
+      </div>
 	        </div>
 	    );
   	}

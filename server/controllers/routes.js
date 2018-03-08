@@ -68,11 +68,11 @@ module.exports = (app, passport) => {
 		if(req.body.title !== ''){
 			models.Invite.create({
 				userID:req.body.userID,
+				host:req.body.host,
 				title: req.body.title,
 	            desc: req.body.desc,
 	            dateStart: req.body.dateStart,
 	            dateEnd:req.body.dateEnd,
-	            foodType:req.body.foodType,
 	            yelpBiz:req.body.yelpBiz
 			}).then(function(message){
 				models.Invite.findAll({order: [
@@ -85,6 +85,29 @@ module.exports = (app, passport) => {
 			res.json({message: "null task"})
 		}
 	});
+
+
+	app.post('/api/post-response', (req,res) => {
+		if(req.body.name !== ''){
+			models.Response.create({
+			inviteId:req.body.inviteId,
+            name: req.body.name,
+            attend: req.body.attend,
+            chosenBiz:req.body.chosenBiz,
+            availableDate: req.body.availableDate,
+            note:req.body.note
+			}).then(function(message){
+				models.Invite.findAll({order: [
+			            ['id', 'ASC']
+			        ]}).then(function(res){
+						res.json(res);
+				});
+			});
+		} else {
+			res.json({message: "null task"})
+		}
+	});
+
 
 	app.get('/api/get-invite/:id', (req,res) => {
 		models.Invite.findAll(
@@ -99,6 +122,70 @@ module.exports = (app, passport) => {
 			res.json(titles);
 		});
 	});
+
+	app.get('/api/get-response/:id', (req,res) => {
+		models.Response.findAll(
+			{
+		    	where: 
+		    	{
+		    		inviteId: req.params.id
+		    	}
+		    }
+		).then(function(names){
+			console.log(names)
+			res.json(names);
+		});
+	});
+
+	app.get('/api/get-date-response/:id/:date', (req,res) => {
+		models.Response.findAndCountAll(
+			{
+		    	where: 
+		    	{
+		    		inviteId: req.params.id,
+		    		availableDate:req.params.date
+
+		    	}
+		    }
+		).then(function(names){
+			console.log(names)
+			res.json(names);
+		});
+	});
+
+	app.get('/api/get-all-response/:id', (req,res) => {
+		models.Response.findAndCountAll(
+			{
+		    	where: 
+		    	{
+		    		inviteId: req.params.id,
+		    		attend:true
+
+		    	}
+		    }
+		).then(function(names){
+			console.log(names)
+			res.json(names);
+		});
+	});
+
+	app.get('/api/get-food-response/:id/:biz', (req,res) => {
+		models.Response.findAndCountAll(
+			{
+		    	where: 
+		    	{
+		    		inviteId: req.params.id,
+		    		attend:true,
+		    		chosenBiz: { $contains: [req.params.biz] }
+
+		    	}
+		    }
+		).then(function(names){
+			console.log(names)
+			res.json(names);
+		});
+	});
+
 
 	app.get('/api/get-myInvite/:userID', (req,res) => {
 		models.Invite.findAll(
