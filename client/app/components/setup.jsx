@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import {Link} from 'react-router';
+import {Link, browserHistory} from 'react-router';
 import axios from 'axios';
 import Logout from './Logout';
 import {Modal, ModalHeader, ModalTitle, ModalClose, ModalBody, ModalFooter} from 'react-modal-bootstrap';
@@ -36,6 +36,7 @@ export default class Setup extends Component {
         .then((results) => {
             if(results.message){
                 if(results.message !== "signed-in"){
+                    alert("You need to sign in to create invites!")
                     browserHistory.push("/")
                 } else {
                   this.setState({

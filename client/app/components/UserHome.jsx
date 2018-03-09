@@ -1,6 +1,9 @@
 import React, { Component } from 'react';
 import { Link, browserHistory } from 'react-router';
 import {Modal, ModalHeader, ModalTitle, ModalClose, ModalBody, ModalFooter} from 'react-modal-bootstrap';
+import Dialog from 'material-ui/Dialog';
+import FlatButton from 'material-ui/FlatButton';
+import RaisedButton from 'material-ui/RaisedButton';
 
 import Logout from './Logout';
 
@@ -57,6 +60,8 @@ export default class UserHome extends Component {
 
 	}
 
+
+
     showlink(id){
         this.setState({
             isOpen:true,
@@ -73,6 +78,21 @@ export default class UserHome extends Component {
 
 
   	render() {
+
+     // var getResponseNumber(id){
+     //    fetch(`/api/get-all-response/${id}`, {
+     //        headers: {
+     //            'content-type': 'application/json',
+     //            'accept': 'application/json'
+     //        }
+     //    })).then((response) => response.json())
+     //    .then((results) => {
+
+     //        return ( <p>{results.count}</p>
+
+
+    //         }); 
+    // }
         let appendMyInvites;
         if(this.state.myInvites){
         appendMyInvites = this.state.myInvites.map((myInvite,index) => {
@@ -97,6 +117,14 @@ export default class UserHome extends Component {
               )
             
           })}
+
+        const actions = [
+              <FlatButton
+                label="Gotcha"
+                primary={true}
+                onClick={this.hideModal.bind(this)}
+              />,
+        ];
 	    return (
 	        <div>
 
@@ -142,24 +170,20 @@ export default class UserHome extends Component {
                     {appendMyInvites}
 		        </div>
 	        </div>
-            <Modal isOpen={this.state.isOpen} onRequestHide={this.hideModal.bind(this)}>
-                <ModalHeader>
-                  <ModalClose onClick={this.hideModal}/>
-                  <ModalTitle>Share the invite with your friends!</ModalTitle>
-                </ModalHeader>
-                <ModalBody>
-                  <p>localhost:8000/invite/{this.state.modal}</p>
-                </ModalBody>
-                <ModalFooter>
-                <Link to="/home">
-                  <button className='btn btn-default' onClick={this.hideModal.bind(this)}>
-                    Close
-                  </button>
-                  </Link>
-                </ModalFooter>
-              </Modal>
+
+      <div>
+        <Dialog
+          title="Share the invite with your friends!"
+          actions={actions}
+          modal={true}
+          open={this.state.isOpen}
+        >
+          localhost:8000/invite/{this.state.modal}
+        </Dialog>
+      </div>
+
             </div>
 
-	    );
-  	}
-};
+);
+
+}};

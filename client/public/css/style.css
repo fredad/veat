@@ -69,14 +69,15 @@
 }
 
 .selectedbizcard{
-	border:1px dotted grey;
-	width: 100%;
+	background-color: #1abc9c;
 	display: inline-block;
 	margin:3px;
 	padding:3px;
 	border-radius: 5px;
 }
-
+.selectedbizcard span {
+	color:white;
+}
 .descArea {
 	display: inline-block;
 	padding-left:10px;

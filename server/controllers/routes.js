@@ -92,6 +92,7 @@ module.exports = (app, passport) => {
 			models.Response.create({
 			inviteId:req.body.inviteId,
             name: req.body.name,
+            email:req.body.email,
             attend: req.body.attend,
             chosenBiz:req.body.chosenBiz,
             availableDate: req.body.availableDate,
@@ -159,7 +160,7 @@ module.exports = (app, passport) => {
 		    	where: 
 		    	{
 		    		inviteId: req.params.id,
-		    		attend:true
+
 
 		    	}
 		    }

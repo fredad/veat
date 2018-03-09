@@ -6,7 +6,7 @@ import {GridList, GridTile} from 'material-ui/GridList';
 import IconButton from 'material-ui/IconButton';
 import Subheader from 'material-ui/Subheader';
 import StarBorder from 'material-ui/svg-icons/toggle/star-border';
-import DatePicker from 'material-ui/DatePicker';
+import Toggle from 'material-ui/Toggle';
 import Logout from './Logout';
 
 
@@ -24,18 +24,23 @@ export default class Recipient extends Component {
             displaySelectedBiz:[],
             optionsState:{},
             myInvites:[],
-            attend:true
+            availableDates:[],
+            attend:false
              
         };
-        this.chooseBiz = this.chooseBiz.bind(this);  
+        this.chooseBiz = this.chooseBiz.bind(this);
+        this.handleDateChange=this.handleDateChange.bind(this);  
+        this.deleteBiz = this.deleteBiz.bind(this);
+
     }
     handleSubmit(){
 
         var newSubmission = {
             inviteId:this.state.invite.id,
             name: this.refs.name.value,
+            email:this.refs.email.value,
             attend: this.state.attend,
-            availableDate: this.refs.date.value,
+            availableDate: this.state.availableDates,
             chosenBiz:this.state.chosenBiz,
             note:this.refs.note.value
         }
@@ -63,8 +68,35 @@ export default class Recipient extends Component {
                 invite: results[0]
             });
 
-        });
+        })
+        .then(() => {
 
+            const proxyurl = "https://cors-anywhere.herokuapp.com/"
+            const auth = {
+            headers: {
+              Authorization:'Bearer NG16oFnP6DvIeTC-X4S6Y1KPkIdw4V_UU8nBHPik0r734ZClThmDSMXQThvEuhiCW65I_LGFSINGNH5T1ugHbRoBTCI1Hup63LBRj0Q-tduyx7v7XCGrx8IZQSqGWnYx'} 
+            }
+        for (var i = 0; i < this.state.invite.yelpBiz.length; i++) {
+
+            const url = `https://api.yelp.com/v3/businesses/${this.state.invite.yelpBiz[i]}`
+        axios.get(proxyurl+url, auth)
+          .then((res) => {
+            if(res.data.Error){
+              this.setState({
+                error: res.data.Error
+              })
+          }
+            var newArr = this.state.selectedBiz.slice();
+           
+            newArr.push(res.data);
+            this.setState({
+                selectedBiz:newArr
+            })
+        })}
+
+     })
+
+      
         fetch('/api/signed-in', {
             headers: {
                 'content-type': 'application/json',
@@ -96,49 +128,26 @@ export default class Recipient extends Component {
 
     }
 
-    componentDidUpdate(){
-        
-        if(!this.state.selectedBiz.length){
-    for (var i = 0; i < this.state.invite.yelpBiz.length; i++) {
-        const url = `https://api.yelp.com/v3/businesses/${this.state.invite.yelpBiz[i]}`
-        const proxyurl = "https://cors-anywhere.herokuapp.com/"
-        const auth = {
-        headers: {
-          Authorization:'Bearer NG16oFnP6DvIeTC-X4S6Y1KPkIdw4V_UU8nBHPik0r734ZClThmDSMXQThvEuhiCW65I_LGFSINGNH5T1ugHbRoBTCI1Hup63LBRj0Q-tduyx7v7XCGrx8IZQSqGWnYx'} 
-    }
-
-    axios.get(proxyurl+url, auth)
-      .then((res) => {
-        if(res.data.Error){
-          this.setState({
-            error: res.data.Error
-          })
-      }
-        var newArr = this.state.selectedBiz.slice();
-        newArr.push(res.data);
-        this.setState({
-            selectedBiz:newArr
-        })
-    })
-
-  .catch(err => {
-    console.log(err)
-  });
+showlog(){
+       console.log(this.state)
+}
+handleDateChange(e){
+    var dates = this.state.availableDates.slice();
+    dates.push(e.target.value);
+    this.setState({
+        availableDates:dates
+    });
 
 }
-
-
-}}
-
-
- showlog(){
-    console.log(this.state)
- }
 
     chooseBiz(option){
         var arrayvar = this.state.chosenBiz.slice()
         arrayvar.push(option.id)
         this.setState({ chosenBiz: arrayvar })
+
+        var arrayvar2 = this.state.displaySelectedBiz.slice()
+        arrayvar2.push(option)
+        this.setState({ displaySelectedBiz: arrayvar2 })
 
     }
 
@@ -146,21 +155,33 @@ export default class Recipient extends Component {
         this.setState({
                 attend:!this.state.attend
             })
-        console.log(this.state.attend)
     }
 
+    deleteBiz(selectedBusiness){
+        var arr = this.state.displaySelectedBiz;
+        var index = arr.indexOf(selectedBusiness);
+        arr.splice(index,1);
+        this.setState({
+            displaySelectedBiz: arr
+        })
 
+        var arr2 = this.state.chosenBiz;
+        arr2.splice(index,1)
+        this.setState({
+            chosenBiz:arr2
+        })
+    }
     render() {
 
         let appendSelectedBiz;
         if(this.state.invite.yelpBiz){
            appendSelectedBiz = this.state.displaySelectedBiz.map((selectedBusiness,index) => {
               return (
-                <div className="selectedbizcard">
-                <a href={selectedBusiness.url}>
-                <li  key={index}>{selectedBusiness.name}</li>
-                </a>
-                </div>
+                    <div className="selectedbizcard">
+                        <span>{selectedBusiness.name}</span>
+                        <span className="fui-cross" onClick={()=>this.deleteBiz(selectedBusiness)}></span>
+                    </div>
+
               )
             
           })}
@@ -173,10 +194,15 @@ export default class Recipient extends Component {
           },
           gridList: {
             width: 800,
-            height: 450,
+            height: 400,
             overflowY: 'auto',
           },
         };
+
+        const switchstyles = {
+            marginBottom: 16,
+        };
+
 
         let appendMyInvitesName
         if(this.state.myInvites.length>0){
@@ -225,28 +251,32 @@ export default class Recipient extends Component {
             <p><font size="100"><b>{this.state.invite.title}</b></font> <i>by: {this.state.invite.host}</i></p></div>
             <p className="lead">{this.state.invite.desc}</p>
               <div className="form-group mx-sm-3 mb-2">
-                <label for="name" className="sr-only">Name</label>
-                <input type="text" name="name" ref='name' className="form-control" placeholder="Name"/>
+              <label for="name" className="sr-only">Name</label>
+                {this.state.user && <input type="text" name="name" ref='name' className="form-control" value={this.state.user.name}/>}
+                {!this.state.user && <input type="text" name="name" ref='name' className="form-control" placeholder="Name"/>}
+             <br/>
+             <input type="text" name="email" ref='email' className="form-control" placeholder="email"/>   
               </div>
             <p>Attend?</p>
-        <div className="col-md-2">
-          <div className="bootstrap-switch-square">
-            <input type="checkbox" checked data-toggle="switch" onChange={this.yes.bind(this)} id="custom-switch-03" data-on-text="<span class='fui-check'></span>" data-off-text="<span class='fui-cross'></span>" />
-          </div>
-        </div><br/>
+            <Toggle
+              defaultToggled={false}
+              style={switchstyles}
+              onToggle={this.yes.bind(this)}
+            />
+            {this.state.attend && <div>
+            <p>I am available on</p>
 
-            <span>I am available on</span>
-
-            <input type="date" min={this.state.invite.dateStart} max={this.state.invite.dateEnd} name="date"  ref='date'/>
-
-
+            <input type="date" min={this.state.invite.dateStart} max={this.state.invite.dateEnd} onChange={this.handleDateChange.bind(this)}/>
+            <span className="fui-plus"></span>
             <br/>
-            <br/>
-            
-            <div style={styles.root}>
+            {appendSelectedBiz}
+
+            <button onClick={this.showlog.bind(this)}>show</button>
+         <div style={styles.root}>
                 <GridList
                   cellHeight={180}
                   style={styles.gridList}
+                  cols={3}
                 >
                   <Subheader>Options</Subheader>
                   {this.state.selectedBiz.map((option, index) => (
@@ -265,12 +295,11 @@ export default class Recipient extends Component {
                 </GridList>
               </div>
 
-            <button onClick={this.showlog.bind(this)}>Show</button>
-            {appendSelectedBiz}
             <br/>
             <br/>
-            <input type="text" ref="note" name="note" placeholder="Comment?"/>
+            <textarea className="form-control" rows="5" ref="note" name="note" placeholder="Comment?"></textarea>
             <br/>
+            </div>}
             <input className="btn btn-default" id="submit-this" type="submit" onClick={this.handleSubmit.bind(this)}/>
 
             </div>

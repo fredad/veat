@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import {Link} from 'react-router';
 import axios from 'axios';
 import {BarChart,CartesianGrid,XAxis,YAxis,Tooltip,Legend,Bar} from 'recharts';
+import Logout from './Logout';
 require('dotenv').config({path:'../../../../.env'})
 
 
@@ -15,6 +16,8 @@ export default class Response extends Component {
             },
             resultCount:[],
             showCharts:true,
+            myInvites:[],
+            user:{}
 
 
         };
@@ -37,8 +40,38 @@ export default class Response extends Component {
                 invite: results[0]
             });
 
-        });
+        })
 
+        fetch('/api/signed-in', {
+            headers: {
+                'content-type': 'application/json',
+                'accept': 'application/json'
+            },
+            credentials: 'same-origin'
+        }).then((response) => response.json())
+        .then((results) => {
+            if(results.message){
+                if(results.message !== "signed-in"){
+                    browserHistory.push("/")
+                } else {
+                    this.setState({
+                        user: results.user
+                    })
+                }
+            }
+        }).then(() => fetch(`/api/get-myInvite/${this.state.user.id}`, {
+            headers: {
+                'content-type': 'application/json',
+                'accept': 'application/json'
+            }
+        })).then((response) => response.json())
+        .then((results) => {
+            this.setState({
+                myInvites:results,
+            });
+
+
+            }); 
         fetch(`/api/get-response/${this.props.params.id}`, {
             headers: {
                 'content-type': 'application/json',
@@ -91,7 +124,7 @@ showCharts(){
                     count:results.count,
                     people:ppl,
                 }       
-                return obj;
+                if(results.count!=0){return obj};
                 console.log(obj);
          
             });
@@ -120,6 +153,7 @@ showCharts(){
 }
 
     render() {
+        console.log(this.state)
         let appendResponse;
         if(this.state.response){
 
@@ -142,6 +176,14 @@ showCharts(){
             }
         })
      }
+             let appendMyInvitesName;
+        if(this.state.myInvites.length>0){
+        appendMyInvitesName = this.state.myInvites.map((invite,index) => {
+              return (
+                <li  key={index}><a href="#">{invite.title}</a></li>
+              )
+            
+          })}
 
             // const { active } = this.props;
 
@@ -158,7 +200,34 @@ showCharts(){
 
 
 	    return (
-
+            <div>
+                <nav role="navigation" className="navbar navbar-inverse navbar-embossed">
+                    <div className="navbar-header">
+                      <button data-target="#bs-example-navbar-collapse-7" data-toggle="collapse" className="navbar-toggle" type="button">
+                        <span className="sr-only">Toggle navigation</span>
+                        <span className="icon-bar"></span>
+                        <span className="icon-bar"></span>
+                        <span className="icon-bar"></span>
+                      </button>
+                      <a href="/" className="navbar-brand veatlogo">Veat</a>
+                    </div>
+                    <div id="bs-example-navbar-collapse-7" className="collapse navbar-collapse">
+                      <p className="navbar-text">Group dinners made easy </p>
+                      <ul className="nav navbar-nav navbar-left">
+                    <li className="dropdown">
+                      <a href="#" className="dropdown-toggle" data-toggle="dropdown">Manage invites <b className="caret"></b></a>
+                      <span className="dropdown-arrow"></span>
+                      <ul className="dropdown-menu">
+                          {appendMyInvitesName}
+                      </ul>
+                    </li>
+                    </ul>
+                    <div className="nav navbar-nav navbar-right">
+                    <span><p className="navbar-text">Hi, {this.state.user.name}</p>
+                      <button className="btn btn-default navbar-btn btn-xs" type="button"><Logout/></button></span>
+                    </div>
+                    </div>
+                  </nav>
 	    	<div className="container">
             <p>Hi</p>
             <button onClick={this.showlog.bind(this)}>yo</button>
@@ -175,6 +244,7 @@ showCharts(){
                    <Bar dataKey="people" fill="#8884d8" />
                 </BarChart>}
  			</div>
+            </div>
 	    );
   	}
 }
