@@ -1,8 +1,13 @@
 import React, { Component } from 'react';
 import {Link} from 'react-router';
 import axios from 'axios';
-import {BarChart,CartesianGrid,XAxis,YAxis,Tooltip,Legend,Bar} from 'recharts';
+import {BarChart,CartesianGrid,XAxis,YAxis,Tooltip,Legend,Bar, PieChart, Pie} from 'recharts';
+import {Tabs, Tab} from 'material-ui/Tabs';
+import SwipeableViews from 'react-swipeable-views';
+import FontIcon from 'material-ui/FontIcon';
 import Logout from './Logout';
+import Paper from 'material-ui/Paper';
+import {Card, CardTitle, CardHeader, CardText} from 'material-ui/Card';
 require('dotenv').config({path:'../../../../.env'})
 
 
@@ -15,12 +20,15 @@ export default class Response extends Component {
                 yelpBiz:[]
             },
             resultCount:[],
-            showCharts:true,
             myInvites:[],
-            user:{}
+            showCharts:false,
+            user:{},
+            slideIndex:0,
+            attendees:[]
 
 
         };
+    this.handleTabChange = this.handleTabChange.bind(this);
     }
 
     showlog(){
@@ -40,6 +48,81 @@ export default class Response extends Component {
                 invite: results[0]
             });
 
+        }).then(()=>{
+                function getCount(id, key){
+        return fetch(`/api/get-food-response/${id}/${key}`, {
+                headers: {
+                    'content-type': 'application/json',
+                    'accept': 'application/json'
+                }
+            }).then((response) => response.json())
+            .then((results) => {
+                var ppl=[];
+                for (var i = 0; i < results.rows.length; i++) { 
+                    ppl.push(results.rows[i].name)};
+                var obj = {
+                    name:key,
+                    count:results.count,
+                    people:ppl,
+                }       
+                if(results.count!=0){return obj};
+         
+            });
+        }
+            for (var i = 0; i < this.state.invite.yelpBizName.length; i++) { 
+                if(this.state.resultCount.length<this.state.invite.yelpBizName.length){
+                getCount(this.props.params.id, this.state.invite.yelpBizName[i]).then((obj) => {
+                    var data = this.state.resultCount;
+                    if (data.indexOf(obj) == -1) {
+                    data.push(obj);
+                    this.setState({
+                    resultCount: data
+                });
+            }
+
+                })
+            }
+
+            }
+        }).then(()=>{
+        fetch(`/api/get-attend-response-yes/${this.props.params.id}`, {
+                headers: {
+                    'content-type': 'application/json',
+                    'accept': 'application/json'
+                }
+            }).then((response) => response.json())
+            .then((results) => {
+
+                var obj = {
+                    name:'attend',
+                    count:results.count,
+                }    
+                var arr = this.state.attendees.slice()
+                arr.push(obj)
+                this.setState({
+                    attendees:arr
+                })
+         
+            });
+        }).then(()=>{
+        fetch(`/api/get-attend-response-no/${this.props.params.id}`, {
+                headers: {
+                    'content-type': 'application/json',
+                    'accept': 'application/json'
+                }
+            }).then((response) => response.json())
+            .then((results) => {
+                var obj = {
+                    name:'not',
+                    count:results.count,
+                }    
+                var arr = this.state.attendees.slice()
+                arr.push(obj)
+                this.setState({
+                    attendees:arr
+                })
+         
+            });
         })
 
         fetch('/api/signed-in', {
@@ -85,7 +168,6 @@ export default class Response extends Component {
             });
             // console.log(results);
         });
-            console.log(this.state.response)
 
         fetch(`/api/get-all-response/${this.props.params.id}`, {
             headers: {
@@ -98,7 +180,6 @@ export default class Response extends Component {
             this.setState({
                 allresponse:results.count
             });
-            // console.log(results);
         });
 
 
@@ -108,99 +189,92 @@ export default class Response extends Component {
 
 
 showCharts(){
-    function getCount(id, key){
-        return fetch(`/api/get-food-response/${id}/${key}`, {
-                headers: {
-                    'content-type': 'application/json',
-                    'accept': 'application/json'
-                }
-            }).then((response) => response.json())
-            .then((results) => {
-                var ppl=[];
-                for (var i = 0; i < results.rows.length; i++) { 
-                    ppl.push(results.rows[i].name)};
-                var obj = {
-                    name:key,
-                    count:results.count,
-                    people:ppl,
-                }       
-                if(results.count!=0){return obj};
-                console.log(obj);
-         
-            });
-    }
-    
-
-    for (var i = 0; i < this.state.invite.yelpBiz.length; i++) { 
-        if(this.state.resultCount.length<this.state.invite.yelpBiz.length){
-        getCount(this.props.params.id, this.state.invite.yelpBiz[i]).then((obj) => {
-            var data = this.state.resultCount;
-            if (data.indexOf(obj) == -1) {
-            data.push(obj);
-            this.setState({
-            resultCount: data
-        });
-    }
-
-        })
-    }
-
-    }
-    if(this.state.resultCount.length != 0){
     this.setState({
-        showCharts:!this.state.showCharts
-    })}
+        showCharts:true,
+    })
 }
 
+handleTabChange(value){
+    this.setState({
+      slideIndex: value,
+    });
+}
     render() {
-        console.log(this.state)
         let appendResponse;
         if(this.state.response){
-
          appendResponse = this.state.response.map((res,index) => {
             if(res.attend==true){
               return (
                 <div>
-                    <p>{res.name} is available on {res.availableDate} and says {res.note}</p>
-                </div>
+               <Card>
+                <CardHeader
+                  title={res.name}
+                  subtitle="Attend"
+                  avatar="https://t3.ftcdn.net/jpg/00/99/98/24/160_F_99982410_AbK4chh0bTDXinBKn2VPf2JUaHrqjX9j.jpg"
+                />
+                <CardText>
+                <i>
+                <span className="fui-calendar"></span><span>  </span> 
+                {res.availableDate.map((date, index) => (
+                <span>{date}; </span>
+                  ))}
+                <br/>
+                <span className="fui-location"></span><span>  </span> 
+                {res.chosenBiz.map((biz, index) => (
+                <span>{biz}; </span>
+                  ))}
+                </i>
+                <br/>
+                <span className="fui-bubble"></span> <span>  </span> {res.note}
+                </CardText>
+              </Card>
+              <br/>
+              </div>
               )
             
           } else {
-              return (
+            return (
                 <div>
-                    <p>{res.name} will not attend </p>
-                </div>
-              )
-            
-            
-            }
+             <Card >
+                <CardHeader
+                  title={res.name}
+                  subtitle="Not Going"
+                  avatar="https://upload.wikimedia.org/wikipedia/en/2/26/Disctemp-x.png"
+                />
+                <CardText>
+                 <span className="fui-bubble"></span> <span>  </span> {res.note}
+                </CardText>
+              </Card>
+              <br/>
+              </div>)
+          }
         })
      }
              let appendMyInvitesName;
         if(this.state.myInvites.length>0){
         appendMyInvitesName = this.state.myInvites.map((invite,index) => {
               return (
-                <li  key={index}><a href="#">{invite.title}</a></li>
+                <li  key={index}><a href={`/response/${invite.id}`}>{invite.title}</a></li>
               )
             
           })}
 
-            // const { active } = this.props;
-
-            // if (active) {
-            //   const { payload, label } = this.props;
-            //   return (
-            //     <div className="custom-tooltip">
-            //       <p className="label">{`${label} : ${payload[0].value}`}</p>
-            //       <p className="intro">{this.getIntroOfPage(label)}</p>
-            //       <p className="desc">Anything you want can be displayed here.</p>
-            //     </div>
-            //   );
-            // }
+        const styles = {
+          headline: {
+            fontSize: 24,
+            paddingTop: 16,
+            marginBottom: 12,
+            fontWeight: 400,
+          },
+          slide: {
+            padding: 10,
+          },
+        };
 
 
 	    return (
             <div>
+
                 <nav role="navigation" className="navbar navbar-inverse navbar-embossed">
                     <div className="navbar-header">
                       <button data-target="#bs-example-navbar-collapse-7" data-toggle="collapse" className="navbar-toggle" type="button">
@@ -229,20 +303,69 @@ showCharts(){
                     </div>
                   </nav>
 	    	<div className="container">
-            <p>Hi</p>
-            <button onClick={this.showlog.bind(this)}>yo</button>
-            {appendResponse}
-            <p>{this.state.allresponse} people are available</p>
-            <button onClick={this.showCharts.bind(this)}>Show Charts</button>
-            {!this.state.showCharts && <BarChart width={730} height={250} data={this.state.resultCount} barGap={1}>
-                  <CartesianGrid strokeDasharray="3 3" />
+            <Paper zDepth={1}>
+             <div className="container2">
+
+            <h2>{this.state.invite.title}</h2>
+                <form>
+                  <div className="form-group row">
+                    <label for="slink" className="col-sm-1">Link: </label>
+                    <div className="col-sm-8">
+                      <div className="form-group">
+                        <div className="input-group">
+                      <input type="text" className="form-control" id="slink" value={`localhost:8000/invite/${this.props.params.id}`}/>
+                      <span className="input-group-btn">
+                        <button className="btn btn-default" type="button">Copy!</button>
+                      </span>  
+                      </div>                  
+                    </div>
+                    </div>
+                  </div>
+                </form>
+
+                <div>
+                <Tabs
+                  onChange={this.handleTabChange}
+                  value={this.state.slideIndex}
+                >
+                  <Tab label="All Response" value={0} />
+                  <Tab label="Analysis" value={1} onActive={this.showCharts.bind(this)}/>
+                  <Tab label="Generate Final Invite" value={2} />
+                </Tabs>
+                <SwipeableViews
+                  index={this.state.slideIndex}
+                  onChangeIndex={this.handleChange}
+                >
+                  <div>
+                    {appendResponse}
+                  </div>
+                  <div style={styles.slide}>
+                 {this.state.showCharts && <div>
+                <label>Attendees</label>
+                    <PieChart width={730} height={250}>
+                  <Pie data={this.state.attendees} dataKey="count" nameKey="name" cx="50%" cy="50%" outerRadius={50} fill="#2ecc71" />
+                 <Tooltip />
+                 <Legend />
+                </PieChart>
+                <label>Restaurants: </label>
+                <BarChart width={730} height={250} data={this.state.resultCount} barGap={1}>
                   <XAxis dataKey="name" />
-                  <YAxis />
                   <Tooltip />
-                  <Legend />
                   <Bar dataKey="count" fill="#8884d8" />
                    <Bar dataKey="people" fill="#8884d8" />
-                </BarChart>}
+                </BarChart>
+                </div>}
+                              </div>
+                  <div style={styles.slide}>
+                    slide n°3
+                  </div>
+                </SwipeableViews>
+              </div>
+            <button onClick={this.showlog.bind(this)}>yo</button>
+
+            
+             </div>
+            </Paper>
  			</div>
             </div>
 	    );

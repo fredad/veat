@@ -73,7 +73,8 @@ module.exports = (app, passport) => {
 	            desc: req.body.desc,
 	            dateStart: req.body.dateStart,
 	            dateEnd:req.body.dateEnd,
-	            yelpBiz:req.body.yelpBiz
+	            yelpBiz:req.body.yelpBiz,
+	            yelpBizName:req.body.yelpBizName,
 			}).then(function(message){
 				models.Invite.findAll({order: [
 			            ['id', 'ASC']
@@ -123,6 +124,37 @@ module.exports = (app, passport) => {
 			res.json(titles);
 		});
 	});
+
+	app.get('/api/get-attend-response-yes/:id', (req,res) => {
+		models.Response.findAndCountAll(
+			{
+		    	where: 
+		    	{
+		    		inviteId: req.params.id,
+		    		attend:true
+		    	}
+		    }
+		).then(function(names){
+			console.log(names)
+			res.json(names);
+		});
+	});
+
+	app.get('/api/get-attend-response-no/:id', (req,res) => {
+		models.Response.findAndCountAll(
+			{
+		    	where: 
+		    	{
+		    		inviteId: req.params.id,
+		    		attend:false
+		    	}
+		    }
+		).then(function(names){
+			console.log(names)
+			res.json(names);
+		});
+	});
+
 
 	app.get('/api/get-response/:id', (req,res) => {
 		models.Response.findAll(

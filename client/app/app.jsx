@@ -7,6 +7,6 @@ import getMuiTheme from 'material-ui/styles/getMuiTheme';
 import routes from './routes.jsx';
 
 ReactDOM.render(
-	<MuiThemeProvider muiTheme={getMuiTheme(darkBaseTheme)}><Router history={browserHistory}>{routes}</Router></MuiThemeProvider>,
+	<MuiThemeProvider><Router history={browserHistory}>{routes}</Router></MuiThemeProvider>,
 	document.getElementById('app')
 );

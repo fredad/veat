@@ -7,7 +7,8 @@ module.exports = function(sequelize, DataTypes) {
     desc: DataTypes.STRING,
     dateStart: DataTypes.STRING,
     dateEnd: DataTypes.STRING,
-    yelpBiz: DataTypes.ARRAY(DataTypes.STRING)
+    yelpBiz: DataTypes.ARRAY(DataTypes.STRING),
+    yelpBizName: DataTypes.ARRAY(DataTypes.STRING)
 
   }, {
     classMethods: {

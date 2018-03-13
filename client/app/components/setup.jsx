@@ -2,6 +2,9 @@ import React, { Component } from 'react';
 import {Link, browserHistory} from 'react-router';
 import axios from 'axios';
 import Logout from './Logout';
+import Paper from 'material-ui/Paper';
+import Chip from 'material-ui/Chip';
+import Zipcodes from 'zipcodes';
 import {Modal, ModalHeader, ModalTitle, ModalClose, ModalBody, ModalFooter} from 'react-modal-bootstrap';
 
 require('dotenv').config({path:'../../../../.env'})
@@ -12,6 +15,7 @@ export default class Setup extends Component {
         this.state = {
         	biz:[],
           selectedBiz:[],
+          yelpBizName:[],
           displaySelectedBiz:[],
           eventID:'',
           isOpen:false,
@@ -19,10 +23,12 @@ export default class Setup extends Component {
           myInvite:{
             id:0
           },
-          myAllInvites:[]
+          myInvites:[],
+          zipcode:'10010'
 
         };
         this.addBiz = this.addBiz.bind(this);
+        this.deleteBiz = this.deleteBiz.bind(this);
     }
 
     componentWillMount(){
@@ -53,16 +59,9 @@ export default class Setup extends Component {
         .then((results) => {
           if(results.length>1){
             this.setState({
-                myInvite:results.pop(),
-                myAllInvites:results
+                myInvites:results
             });
 
-        } else {
-          this.setState({
-            myInvite:{
-              id:1
-            }
-          })
         }});
   }
     handleSubmit(e){
@@ -74,7 +73,8 @@ export default class Setup extends Component {
             desc: this.refs.desc.value,
             dateStart: this.refs.start.value,
             dateEnd:this.refs.end.value,
-            yelpBiz:this.state.selectedBiz
+            yelpBiz:this.state.selectedBiz,
+            yelpBizName:this.state.yelpBizName,
         }
         fetch('/api/post-submission', {
             method: 'post',
@@ -83,17 +83,44 @@ export default class Setup extends Component {
                 'content-type': 'application/json',
                 'accept': 'application/json'
             },
-        }).then(this.setState({
+        }).then(()=>fetch(`/api/get-myInvite/${this.state.user.id}`, {
+            headers: {
+                'content-type': 'application/json',
+                'accept': 'application/json'
+            }
+        })).then((response) => response.json())
+        .then((results) => {
+          if(results.length>1){
+            this.setState({
+                myInvite:results.pop(),
+            });
+
+        } else {
+          this.setState({
+            myInvite:{
+              id:1
+            }
+          })
+        }}).then(this.setState({
           isOpen:true
         }));
-        console.log(newSubmission)
+        console.log(this.state.myInvite)
+
 
 
     }
 
+    zipcode(e){
+      if(e.target.value.length==5){
+        this.setState({
+          zipcode:e.target.value
+        })
+    }
+    }
+
     yelpSearch(e){
         e.preventDefault();
-        const url = 'https://api.yelp.com/v3/businesses/search?term='+e.target.value+'&latitude=40.758896&longitude=-73.985130';
+        const url = 'https://api.yelp.com/v3/businesses/search?term='+e.target.value+'&latitude='+Zipcodes.lookup(this.state.zipcode).latitude+'&longitude='+Zipcodes.lookup(this.state.zipcode).longitude;
         const proxyurl = "https://cors-anywhere.herokuapp.com/"
         const auth = {
         headers: {
@@ -123,18 +150,26 @@ export default class Setup extends Component {
 
     }
 
-    // addBiz(business){
-    //     var newStuff = this.state.selectedBiz;    
-    //     if (newStuff!= ''){
-    //         newStuff = newStuff.concat(",",business.id)   
-    //     }
-    //         else newStuff = business.id
-    //     this.setState({selectedBiz:newStuff})
+    deleteBiz(selectedBusiness){
+        var arr = this.state.displaySelectedBiz;
+        var index = arr.indexOf(selectedBusiness);
+        arr.splice(index,1);
+        this.setState({
+            displaySelectedBiz: arr
+        })
 
-    //     var arrayvar = this.state.displaySelectedBiz.slice()
-    //     arrayvar.push(business)
-    //     this.setState({ displaySelectedBiz: arrayvar })
-    // }
+        var arr2 = this.state.selectedBiz;
+        arr2.splice(index,1)
+        this.setState({
+            selectedBiz:arr2
+        })
+
+        var arr3 = this.state.yelpBizName;
+        arr3.splice(index,1)
+        this.setState({
+            yelpBizName:arr3
+        })
+    }
 
         addBiz(business){
         var newStuff = this.state.selectedBiz.slice()
@@ -144,6 +179,12 @@ export default class Setup extends Component {
         var arrayvar = this.state.displaySelectedBiz.slice()
         arrayvar.push(business)
         this.setState({ displaySelectedBiz: arrayvar })
+
+        var arrayvar2 = this.state.yelpBizName.slice()
+        arrayvar2.push(business.name)
+        this.setState({ yelpBizName: arrayvar2 })
+
+        console.log(this.state)
     }
 
       hideModal(){
@@ -153,16 +194,19 @@ export default class Setup extends Component {
       };
 
 
-    componentDidUpdate(){
-        if(this.state.myInvite.id == 0){
-
-    }
-}
+      checkDates(){
+            if(this.refs.start.value > this.refs.end.value){
+                  alert("Start date cannot exceed end date")
+                  this.refs.end.value = this.refs.start.value
+            }
+      }
 
     render() {
         // if(this.state.biz){
         const appendYelpResults = this.state.biz.map((business,index) => {
               return (
+                <div>
+                <Paper style={cardstyle} zDepth={2}>
                 <div className="bizcard clearfix" >
                 <img src={business.image_url} alt="img"/>
                 <div className="descArea">
@@ -175,27 +219,37 @@ export default class Setup extends Component {
                 <button className="btn btn-success" onClick={()=>{this.addBiz(business)}}>Add</button>
                 </div>
                 </div>
+                </Paper>
+                <br/>
+                </div>
               )
             
           })
         // }
         const appendSelectedBiz = this.state.displaySelectedBiz.map((selectedBusiness,index) => {
               return (
-                <div className="selectedbizcard">
-                <a href={selectedBusiness.url}>
-                <li  key={index}><a herf="#"> {selectedBusiness.name}</a></li>
-                </a>
-                </div>
+
+                 <Chip
+                  key={index}
+                  onRequestDelete={()=>this.deleteBiz(selectedBusiness)}
+                  style={{margin:4}}
+                >
+                   {selectedBusiness.name}
+                </Chip>
               )
             
           })
 
-        let appendMyInvites;
-        if(this.state.myAllInvites.length>0){
-        appendMyInvites = this.state.myAllInvites.map((invite,index) => {
-              return (
+        const cardstyle = {
+          borderRadius: '5px'
 
-                <li  key={index}>{invite.title}</li>
+        };
+
+        let appendMyInvitesName;
+        if(this.state.myInvites.length>0){
+        appendMyInvitesName = this.state.myInvites.map((invite,index) => {
+              return (
+                <li  key={index}><a href={`/response/${invite.id}`}>{invite.title}</a></li>
               )
             
           })}
@@ -218,7 +272,7 @@ export default class Setup extends Component {
           <a href="#" className="dropdown-toggle" data-toggle="dropdown">Manage invites <b className="caret"></b></a>
           <span className="dropdown-arrow"></span>
           <ul className="dropdown-menu">
-              {appendMyInvites}
+              {appendMyInvitesName}
           </ul>
         </li>
         </ul>
@@ -229,38 +283,55 @@ export default class Setup extends Component {
         </div>
       </nav>
       <div className="container">
+      <Paper zDepth={1}>
+      <div className="container2">
             <h2>Create Your Invite</h2>
 
 		        <form onSubmit={this.handleSubmit.bind(this)}>
-                    <input placeholder="event title" type="textarea" name="title" ref="title"/>
+                    <label htmlFor="title">Event Title:</label>
+                    <input type="text" name="title" ref='title' id="title" className="form-control" placeholder="Event Title"/>   
                     <div className="form-group">
                       <label htmlFor="desc">Description:</label>
                       <textarea className="form-control" rows="5" id="desc" name="desc" ref="desc"></textarea>
                     </div>
-                    <p>Date Range</p> <br/>
-                    <p>Between</p> <input type="date" name="start" ref="start" />
-                    <p> and </p><input type="date" name="end" ref="end" />
+                    <label>Date Range:</label>
+                    <br/>
+                    <span><input type="date" name="start" ref="start" />
+                    <span> to </span><input type="date" name="end" ref="end" onChange={this.checkDates.bind(this)}/></span>
                     <div>
                     <br/>
-                    <p>Search ur Restaurants</p>
-                    <input type="search" onChange={this.yelpSearch.bind(this)}/>
+                    <label>Search Restaurants:</label>
+                    <br/>
+                    <div className="row">
+                    <div className="col-lg-9">
+                    <input type="text" name="search" ref='search' className="form-control" placeholder="Search Restaurants" onChange={this.yelpSearch.bind(this)}/> 
                     </div>
-                    <input className="btn btn-primary" id="submit-this" type="submit"/>
-            </form>
-            <div className='selected'>
-            <h5>You selected:</h5>
+                    <label for="zipcode" className="col-lg-1">Near:</label>
+                    <div className="col-lg-2">
+                    <input type="text" ref='zipcode' id='zipcode' className="form-control" placeholder={this.state.zipcode} onChange={this.zipcode.bind(this)}/>  
+                    </div>
+                    </div>
+                    </div>
+                    <br/>
+            <label><b>You selected: </b></label>
+            <div style={{display: 'flex',flexWrap: 'wrap',}}>
+            {appendSelectedBiz}
             </div>
             <br/>
-            {appendSelectedBiz}
+            <input className="btn btn-primary" id="submit-this" type="submit"/>
+            </form>
+            <hr/>
             {appendYelpResults}
+            </div>
+            </Paper>
 
               <Modal isOpen={this.state.isOpen} onRequestHide={this.hideModal.bind(this)}>
                 <ModalHeader>
                   <ModalClose onClick={this.hideModal}/>
-                  <ModalTitle>Now share the invite with your friends!</ModalTitle>
+                  <ModalTitle>Nice!</ModalTitle>
                 </ModalHeader>
                 <ModalBody>
-                  <p>localhost:8000/invite/{this.state.myInvite.id}</p>
+                  <p>You've successfully created a new invite</p>
                 </ModalBody>
                 <ModalFooter>
                 <Link to="/home">

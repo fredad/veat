@@ -3,6 +3,8 @@ import { Link, browserHistory } from 'react-router';
 import {Modal, ModalHeader, ModalTitle, ModalClose, ModalBody, ModalFooter} from 'react-modal-bootstrap';
 import Dialog from 'material-ui/Dialog';
 import FlatButton from 'material-ui/FlatButton';
+import {Card, CardTitle, CardActions, CardHeader, CardText} from 'material-ui/Card';
+import Paper from 'material-ui/Paper';
 import RaisedButton from 'material-ui/RaisedButton';
 
 import Logout from './Logout';
@@ -79,41 +81,29 @@ export default class UserHome extends Component {
 
   	render() {
 
-     // var getResponseNumber(id){
-     //    fetch(`/api/get-all-response/${id}`, {
-     //        headers: {
-     //            'content-type': 'application/json',
-     //            'accept': 'application/json'
-     //        }
-     //    })).then((response) => response.json())
-     //    .then((results) => {
-
-     //        return ( <p>{results.count}</p>
-
-
-    //         }); 
-    // }
         let appendMyInvites;
         if(this.state.myInvites){
         appendMyInvites = this.state.myInvites.map((myInvite,index) => {
               return (
-                <div className="dashboard">
-
-                <p><strong>My invite {index+1}</strong>   <span className="fui-link" onClick={()=>{this.showlink(myInvite.id)}}></span></p>
-                <a href={`/response/${myInvite.id}`} >
-                <h3>{myInvite.title}</h3>
-                </a>
-                <p>{myInvite.desc}</p>
+                <div>
+                <Card style={{textAlign:'left'}}>
+                 <CardTitle title={myInvite.title} subtitle={myInvite.desc} />
+                <CardActions>
+                    <FlatButton onClick={()=>{this.showlink(myInvite.id)}} label="Share Link" />
+                    <Link to={`/response/${myInvite.id}`} > <FlatButton label="See Responses" /></Link>
+                </CardActions>
+                </Card>
+                <br/>
                 </div>
               )
-            
+        
           })}
 
         let appendMyInvitesName;
         if(this.state.myInvites.length>0){
         appendMyInvitesName = this.state.myInvites.map((invite,index) => {
               return (
-                <li  key={index}><a href="#">{invite.title}</a></li>
+                <li  key={index}><a href={`/response/${invite.id}`}>{invite.title}</a></li>
               )
             
           })}
@@ -158,17 +148,23 @@ export default class UserHome extends Component {
                   </nav>
 
          <div className="container">
+         <Paper zDepth={1}>
+         <div className="container2">
 
 				<div className="text-center">
-		        	<h3>Welcome {this.state.user.name}</h3>
+		        	<h4>Welcome back, {this.state.user.name}!</h4>
                     {this.state.myInvites.length==0 && <p>You don't have any invites yet! </p>}
                    <Link to="/setup">
-                    <button className="btn btn-primary">Create Your Own Invite</button>
+                    <button className="btn btn-primary">Create A New Invite</button>
                     </Link>
                     <br/>
                      <br/>
+
                     {appendMyInvites}
+
 		        </div>
+            </div>
+                </Paper>
 	        </div>
 
       <div>
@@ -178,7 +174,23 @@ export default class UserHome extends Component {
           modal={true}
           open={this.state.isOpen}
         >
-          localhost:8000/invite/{this.state.modal}
+
+        <div className="col-sm-18">
+          <div className="form-group">
+            <div className="input-group">
+          <input type="text" className="form-control" id="slink" value={`localhost:8000/invite/${this.state.modal}`}/>
+          <span className="input-group-btn">
+            <button className="btn btn-default" type="button">Copy!</button>
+          </span>  
+          </div>                  
+        </div>
+        </div>
+          <br/>
+          <span className="fui-facebook"></span>
+          <span>    </span>
+          <span className="fui-twitter"></span> 
+          <span>    </span> 
+          <span className="fui-google-plus"></span>
         </Dialog>
       </div>
 

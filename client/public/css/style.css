@@ -2,10 +2,12 @@
 	font-family: 'Pacifico', cursive;
 	font-weight: lighter;
 }
-.container {
-	box-shadow: 1px 1px 1px 1px grey;
-	margin-top: 50px;
+.container2 {
+
+	padding:25px;
+	padding-top: 50px;
 }
+
 .navbar-text {
 	font-style: italic;
 }
@@ -39,8 +41,7 @@
 	display: inline-block;
 	margin:3px;
 	padding:3px;
-	border-radius: 5px;
-
+	
 
 }
 
@@ -68,6 +69,10 @@
     display: table;
 }
 
+.navbar {
+	border-radius: 0px;
+}
+
 .selectedbizcard{
 	background-color: #1abc9c;
 	display: inline-block;
@@ -75,8 +80,14 @@
 	padding:3px;
 	border-radius: 5px;
 }
+
+.fui-cross {
+	color:#e74c3c;
+}
 .selectedbizcard span {
 	color:white;
+	font-size: 16px;
+	margin-right: 5px;
 }
 .descArea {
 	display: inline-block;
@@ -104,15 +115,6 @@
 	 width: 290px;
 }
 
-.hoverDesc {
-    position: absolute;
-    text-align: center;
-    width: 290px;
-    bottom: 0px;
-    background-color: rgba(169,169,169,0.6);
-}
 
-.hoverDesc a {
-	color: white;
-}
+
 
