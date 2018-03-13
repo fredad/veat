@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import {Link} from 'react-router';
+import {Link, browserHistory} from 'react-router';
 import axios from 'axios';
 import {BarChart,CartesianGrid,XAxis,YAxis,Tooltip,Legend,Bar, PieChart, Pie} from 'recharts';
 import {Tabs, Tab} from 'material-ui/Tabs';
@@ -141,6 +141,10 @@ export default class Response extends Component {
                         user: results.user
                     })
                 }
+            }
+        }).then(()=>{
+            if(this.state.user.id !== this.state.invite.userID){
+                browserHistory.push('/');
             }
         }).then(() => fetch(`/api/get-myInvite/${this.state.user.id}`, {
             headers: {
@@ -361,9 +365,6 @@ handleTabChange(value){
                   </div>
                 </SwipeableViews>
               </div>
-            <button onClick={this.showlog.bind(this)}>yo</button>
-
-            
              </div>
             </Paper>
  			</div>

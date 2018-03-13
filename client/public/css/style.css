@@ -54,10 +54,10 @@
 	margin:10px;
 }
 
-.login{
+.lg{
 	max-width: 650px;
 	margin:auto;
-	margin-top: 13%;
+	margin-top: 18%;
 }
 
 .span{
@@ -71,6 +71,17 @@
 
 .navbar {
 	border-radius: 0px;
+}
+
+.signinpage {
+    background: url(../food.jpg);
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+}
+
+.signinpage, html {
+    height: 100%;
 }
 
 .selectedbizcard{

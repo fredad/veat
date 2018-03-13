@@ -60,16 +60,10 @@ export default class SignIn extends Component {
         });
     }
   	render() {
-        let imgUrl = './food-2.jepg'
-        var divStyle = {
-            backgroundImage: 'url('+imgUrl+')',
-            backgroundSize: 'cover',
-            overflow: 'hidden'
-        }
 
 	    return (
 
-	        <div style={{divStyle}}>   
+	        <div className="signinpage">   
         <nav role="navigation" className="navbar navbar-inverse navbar-embossed">
         <div className="navbar-header">
           <button data-target="#bs-example-navbar-collapse-7" data-toggle="collapse" className="navbar-toggle" type="button">
@@ -85,14 +79,15 @@ export default class SignIn extends Component {
         </div>
       </nav>
  
-      <div>
-      
-        <div className="login">
-        <p className="veatlogo veatlogobcolor"><font size="200">Veat</font></p>
+      <div className="container">
+
+        <div className="lg">
+
         <form onSubmit={this.signInForm.bind(this)}>
           <div className="login-form">
+                  <p className="veatlogo veatlogobcolor"><font size="200">Veat</font></p>
             <div className="form-group">
-              <input type="text" className="form-control login-field" placeholder="Enter your name" id="login-name" ref="username"/>
+              <input type="text" className="form-control login-field" placeholder="Enter your Username" id="login-name" ref="username"/>
               <label className="login-field-icon fui-user" for="login-name"></label>
             </div>
 
@@ -105,6 +100,18 @@ export default class SignIn extends Component {
             <a className="login-link" href="/signup">Don't have an account? Please sign up</a>
           </div>
           </form>
+          <br/>
+          <br/>
+          <br/>
+          <br/>
+          <br/>
+          <br/>
+          <br/>
+          <br/>
+          <br/>
+          <br/>
+          <br/>
+          <br/>
         </div>
 
       </div>

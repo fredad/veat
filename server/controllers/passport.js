@@ -45,7 +45,8 @@ module.exports = function(passport) {
 	  				return models.User.create({
 	  					name: req.body.name,
 	  					username: username,
-	  					password: password
+	  					password: password,
+	  					zipcode: req.body.zipcode,
 	  				}).then(function(newUser){
 	  					return done(null, newUser)
 						}).catch(function(err){

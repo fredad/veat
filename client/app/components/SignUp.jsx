@@ -1,18 +1,25 @@
 import React, { Component } from 'react';
 import { Link, browserHistory } from 'react-router';
+import {Modal, ModalHeader, ModalTitle, ModalClose, ModalBody, ModalFooter} from 'react-modal-bootstrap';
 
 export default class SignUp extends Component {
     constructor(props) {
         super(props);
         this.state = {
+            isOpen:false,
         };
     }
     signUpForm(e){
     	e.preventDefault();
+        if(!this.refs.name.value  || !this.refs.username.value || !this.refs.password.value || !this.refs.zipcode.value){
+            alert('Please fill in all fields');
+            return;
+        }
     	var newUser = {
     		name: this.refs.name.value,
     		username: this.refs.username.value,
-    		password: this.refs.password.value
+    		password: this.refs.password.value,
+            zipcode:this.refs.zipcode.value
     	}
         fetch('/api/sign-up', {
             method: 'post',
@@ -24,9 +31,15 @@ export default class SignUp extends Component {
             credentials: 'same-origin'
         }).then((response) => response.json())
         .then((results) => {
-            alert('done');
-        	browserHistory.push("/");
+            this.setState({
+                isOpen:true,
+            });
         });
+    }
+    hideModal(){
+    this.setState({
+        isOpen:false,
+    });
     }
 	componentWillMount(){
         fetch('/api/signed-in', {
@@ -46,9 +59,7 @@ export default class SignUp extends Component {
 	}
   	render() {
 	    return (
-	        <div>
-
-            <div >   
+	        <div className='signinpage'> 
         <nav role="navigation" className="navbar navbar-inverse navbar-embossed">
         <div className="navbar-header">
           <button data-target="#bs-example-navbar-collapse-7" data-toggle="collapse" className="navbar-toggle" type="button">
@@ -64,15 +75,15 @@ export default class SignUp extends Component {
         </div>
       </nav>
  
-      <div>
-      
-        <div className="login">
-        <p className="veatlogo veatlogobcolor"><font size="200">Veat</font></p>
+      <div className="container">
+        <div className="lg">
+        
         <form onSubmit={this.signUpForm.bind(this)}>
           <div className="login-form">
+          <p className="veatlogo veatlogobcolor"><font size="200">Veat</font></p>
             <div className="form-group">
-              <input type="text" className="form-control login-field" placeholder="name" id="login-name" ref="name"/>
-              <label className="login-field-icon fui-user" for="login-name"></label>
+              <input type="text" className="form-control login-field" placeholder="Name" id="login-name" ref="name"/>
+              <label className="login-field-icon fui-document" for="login-name"></label>
             </div>
 
           <div className="form-group">
@@ -85,14 +96,45 @@ export default class SignUp extends Component {
               <label className="login-field-icon fui-lock" for="login-pass"></label>
             </div>
 
+            <div className="form-group">
+              <input type="text" className="form-control login-field" placeholder="Zipcode" id="login-zipcode" ref="zipcode"/>
+              <label className="login-field-icon fui-location" for="login-pass"></label>
+            </div>
+
             <input className="btn btn-primary btn-lg btn-block"  type="submit" />
-            <a className="login-link" href="/signup">Don't have an account? Please sign up</a>
           </div>
           </form>
         </div>
+          <br/>
+          <br/>
+          <br/>
+          <br/>
+          <br/>
+          <br/>
+          <br/>
+          <br/>
+          <br/>
+          <br/>
+          <br/>
+          <br/>
+            <Modal isOpen={this.state.isOpen} onRequestHide={this.hideModal.bind(this)}>
+                <ModalHeader>
+                  <ModalClose onClick={this.hideModal}/>
+                  <ModalTitle>Success!</ModalTitle>
+                </ModalHeader>
+                <ModalBody>
+                  <p>Welcome to Veat :)</p>
+                </ModalBody>
+                <ModalFooter>
+                <Link to="/home">
+                  <button className='btn btn-default' onClick={this.hideModal.bind(this)}>
+                    Close
+                  </button>
+                  </Link>
+                </ModalFooter>
+              </Modal>
 
       </div>
-            </div>
 	        </div>
 	    );
   	}

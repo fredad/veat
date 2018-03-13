@@ -57,12 +57,16 @@ export default class Setup extends Component {
             }
         })).then((response) => response.json())
         .then((results) => {
-          if(results.length>1){
+          if(results.length>0){
             this.setState({
                 myInvites:results
             });
 
-        }});
+        }}).then(()=>{
+          this.setState({
+            zipcode:this.state.user.zipcode
+          })
+        });
   }
     handleSubmit(e){
         e.preventDefault();

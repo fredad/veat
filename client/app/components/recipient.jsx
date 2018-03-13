@@ -181,12 +181,13 @@ addAnotherDate(){
 
     chooseBiz(option){
         var arrayvar = this.state.chosenBiz.slice()
+        if(arrayvar.indexOf(option.name)==-1){
         arrayvar.push(option.name)
         this.setState({ chosenBiz: arrayvar })
 
         var arrayvar2 = this.state.displaySelectedBiz.slice()
         arrayvar2.push(option)
-        this.setState({ displaySelectedBiz: arrayvar2 })
+        this.setState({ displaySelectedBiz: arrayvar2 })}
 
     }
 
