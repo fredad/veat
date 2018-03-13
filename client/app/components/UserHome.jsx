@@ -178,7 +178,7 @@ export default class UserHome extends Component {
         <div className="col-sm-18">
           <div className="form-group">
             <div className="input-group">
-          <input type="text" className="form-control" id="slink" value={`localhost:8000/invite/${this.state.modal}`}/>
+          <input type="text" className="form-control" id="slink" value={`https://veat-app.herokuapp.com/invite/${this.state.modal}`}/>
           <span className="input-group-btn">
             <button className="btn btn-default" type="button">Copy!</button>
           </span>  

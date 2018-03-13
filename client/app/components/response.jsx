@@ -317,7 +317,7 @@ handleTabChange(value){
                     <div className="col-sm-8">
                       <div className="form-group">
                         <div className="input-group">
-                      <input type="text" className="form-control" id="slink" value={`localhost:8000/invite/${this.props.params.id}`}/>
+                      <input type="text" className="form-control" id="slink" value={`https://veat-app.herokuapp.com/invite/${this.props.params.id}`}/>
                       <span className="input-group-btn">
                         <button className="btn btn-default" type="button">Copy!</button>
                       </span>  
