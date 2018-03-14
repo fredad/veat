@@ -101,8 +101,8 @@ module.exports = (app, passport) => {
 			}).then(function(message){
 				models.Invite.findAll({order: [
 			            ['id', 'ASC']
-			        ]}).then(function(res){
-						res.json(res);
+			        ]}).then(function(results){
+						res.json(results);
 				});
 			});
 		} else {
@@ -176,7 +176,8 @@ module.exports = (app, passport) => {
 		    	where: 
 		    	{
 		    		inviteId: req.params.id,
-		    		availableDate:req.params.date
+		    		attend:true,
+		    		availableDate:{ $contains: [req.params.date] }
 
 		    	}
 		    }
@@ -218,6 +219,7 @@ module.exports = (app, passport) => {
 			res.json(names);
 		});
 	});
+
 
 
 	app.get('/api/get-myInvite/:userID', (req,res) => {

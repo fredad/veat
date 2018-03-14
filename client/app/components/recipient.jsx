@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import {Link} from 'react-router';
+import { Link, browserHistory } from 'react-router';
 import axios from 'axios';
 import {DropdownButton, MenuItem} from 'react-bootstrap';
 import {GridList, GridTile} from 'material-ui/GridList';
@@ -9,6 +9,7 @@ import Info from 'material-ui/svg-icons/action/info';
 import Toggle from 'material-ui/Toggle';
 import {Card, CardHeader, CardTitle, CardText} from 'material-ui/Card';
 import Dialog from 'material-ui/Dialog';
+import DatePicker from 'material-ui/DatePicker';
 import Paper from 'material-ui/Paper';
 import Chip from 'material-ui/Chip';
 import Logout from './Logout';
@@ -36,13 +37,15 @@ export default class Recipient extends Component {
                 location:{}
             },
             selectedBizReviews:[],
-            anotherdateNum:1
+            anotherdateNum:1,
+            dateObj:{}
              
         };
         this.chooseBiz = this.chooseBiz.bind(this);
         this.handleDateChange=this.handleDateChange.bind(this);  
         this.deleteBiz = this.deleteBiz.bind(this);
         this.showDetails = this.showDetails.bind(this);
+            
     
 
     }
@@ -83,8 +86,12 @@ export default class Recipient extends Component {
                 'content-type': 'application/json',
                 'accept': 'application/json'
             },
-        }).then(alert('done'));
-        console.log(newSubmission)
+        }).then((response) => response.json())
+        .then((results) => {
+          console.log('in here')
+          browserHistory.push("/done")
+        });
+        console.log('done')
     }
 
     componentWillMount(){
@@ -127,6 +134,15 @@ export default class Recipient extends Component {
             })
         })}
 
+     }).then(()=>{
+      var minDateObj = new Date(this.state.invite.dateStart);
+      var maxDateObj = new Date(this.state.invite.dateEnd);
+      this.setState({
+        dateObj:{
+          minDate:minDateObj,
+          maxDate:maxDateObj
+        }
+      })
      })
 
       
@@ -164,13 +180,20 @@ export default class Recipient extends Component {
 showlog(){
        console.log(this.state)
 }
-handleDateChange(e){
+handleDateChange(e, date){
     var dates = this.state.availableDates.slice();
-    if(dates.indexOf(e.target.value)==-1){dates.push(e.target.value)};
+    var month = '' + (date.getMonth() + 1),
+        day = '' + date.getDate(),
+        year = date.getFullYear();
+
+    if (month.length < 2) month = '0' + month;
+    if (day.length < 2) day = '0' + day;
+    var dateString = [year, month, day].join('-');
+    if(dates.indexOf(dateString)==-1){dates.push(dateString)};
     this.setState({
         availableDates:dates
     });
-
+    console.log(this.state.availableDates)
 }
 
 addAnotherDate(){
@@ -291,9 +314,23 @@ addAnotherDate(){
 
         const anotherdate = [];
         for (var i = 0; i < this.state.anotherdateNum; i++) {
-        anotherdate.push(<div style={{marginBottom:3}}><input type="date" min={this.state.invite.dateStart} max={this.state.invite.dateEnd} onChange={this.handleDateChange.bind(this)}/>
-            <span style={{marginLeft:8}} className="fui-plus-circle" onClick={this.addAnotherDate.bind(this)}></span>
-            </div>);
+        anotherdate.push(
+          <div>
+        <DatePicker
+        className="inlinebutton"
+          autoOk={this.state.autoOk}
+          minDate={this.state.dateObj.minDate}
+          maxDate={this.state.dateObj.maxDate}
+          defaultDate={this.state.dateObj.minDate}
+          onChange={this.handleDateChange.bind(this)}
+          autoOk={true}
+        />
+        <span className="fui-plus-circle inlinebutton" onClick={this.addAnotherDate.bind(this)}></span>
+        <br/>
+        <br/>
+
+        </div>
+);
          };
 
 
@@ -349,6 +386,7 @@ addAnotherDate(){
             </div>
             {this.state.attend && <div>
             <label>I am available on: <font size="4" color="red">*</font></label>
+
             <br/>
             {anotherdate}
             <br/>

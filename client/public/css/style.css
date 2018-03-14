@@ -77,11 +77,20 @@
     background: url(../food.jpg);
     background-position: center;
     background-repeat: no-repeat;
-    background-size: cover;
+    background-position: center;
+	-webkit-background-size: cover;
+	-moz-background-size: cover;
+	-o-background-size: cover;
+	background-size: cover;
+	background-attachment: fixed;
 }
 
-.signinpage, html {
-    height: 100%;
+body{
+    min-height: 100%;
+}
+
+html{
+    min-height: 100%;
 }
 
 .selectedbizcard{
@@ -91,7 +100,10 @@
 	padding:3px;
 	border-radius: 5px;
 }
-
+.inlinebutton {
+	display: inline;
+	float: left;
+}
 .fui-cross {
 	color:#e74c3c;
 }
@@ -100,6 +112,7 @@
 	font-size: 16px;
 	margin-right: 5px;
 }
+
 .descArea {
 	display: inline-block;
 	padding-left:10px;

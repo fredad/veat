@@ -7,7 +7,10 @@ import SwipeableViews from 'react-swipeable-views';
 import FontIcon from 'material-ui/FontIcon';
 import Logout from './Logout';
 import Paper from 'material-ui/Paper';
+import datesBetween from 'dates-between';
 import {Card, CardTitle, CardHeader, CardText} from 'material-ui/Card';
+import ReactEcharts from 'echarts-for-react';
+import TextField from 'material-ui/TextField';
 require('dotenv').config({path:'../../../../.env'})
 
 
@@ -22,10 +25,12 @@ export default class Response extends Component {
             resultCount:[],
             myInvites:[],
             showCharts:false,
+            showText:false,
             user:{},
             slideIndex:0,
-            attendees:[]
-
+            attendees:[],
+            dateRange:[],
+            resultDateCount:[],
 
         };
     this.handleTabChange = this.handleTabChange.bind(this);
@@ -123,6 +128,57 @@ export default class Response extends Component {
                 })
          
             });
+        }).then(()=>{
+          var datesNewFormat = [];
+          const dates = Array.from(datesBetween(new Date(this.state.invite.dateStart), new Date(this.state.invite.dateEnd)));
+          for (var i = 0; i < dates.length; i++) { 
+                var month = '' + (dates[i].getMonth() + 1),
+                    day = '' + dates[i].getDate(),
+                    year = dates[i].getFullYear();
+
+                if (month.length < 2) month = '0' + month;
+                if (day.length < 2) day = '0' + day;
+                datesNewFormat.push([year, month, day].join('-'));
+          }
+          this.setState({
+            dateRange:datesNewFormat
+          });
+
+        }).then(()=>{
+                function getDateCount(id,date){
+        return fetch(`/api/get-date-response/${id}/${date}`, {
+                headers: {
+                    'content-type': 'application/json',
+                    'accept': 'application/json'
+                }
+            }).then((response) => response.json())
+            .then((results) => {
+                var ppl=[];
+                for (var i = 0; i < results.rows.length; i++) { 
+                    ppl.push(results.rows[i].name)};
+                var dateObj = {
+                    date:date,
+                    count:results.count,
+                    people:ppl,
+                }       
+                if(results.count!=0){return dateObj};
+         
+            });
+        }
+            for (var i = 0; i < this.state.dateRange.length; i++) { 
+                getDateCount(this.props.params.id,this.state.dateRange[i]).then((dateObj) => {
+                    var dataDate = this.state.resultDateCount.slice();
+                    if (dataDate.indexOf(dateObj) == -1) {
+                    dataDate.push(dateObj);
+                    this.setState({
+                    resultDateCount: dataDate
+                });
+            }
+
+                })
+            
+
+            }
         })
 
         fetch('/api/signed-in', {
@@ -189,14 +245,18 @@ export default class Response extends Component {
 
     }
 
-
-
-
 showCharts(){
     this.setState({
         showCharts:true,
     })
 }
+
+showText(){
+    this.setState({
+        showText:true,
+    })
+}
+
 
 handleTabChange(value){
     this.setState({
@@ -317,9 +377,11 @@ handleTabChange(value){
                     <div className="col-sm-8">
                       <div className="form-group">
                         <div className="input-group">
-                      <input type="text" className="form-control" id="slink" value={`https://veat-app.herokuapp.com/invite/${this.props.params.id}`}/>
+                      <input type="text" className="form-control" id="slink" ref="link" value={`https://veat-app.herokuapp.com/invite/${this.props.params.id}`}/>
                       <span className="input-group-btn">
+
                         <button className="btn btn-default" type="button">Copy!</button>
+
                       </span>  
                       </div>                  
                     </div>
@@ -332,9 +394,9 @@ handleTabChange(value){
                   onChange={this.handleTabChange}
                   value={this.state.slideIndex}
                 >
-                  <Tab label="All Response" value={0} />
+                  <Tab label={`All Responses (${this.state.response.length})`} value={0} />
                   <Tab label="Analysis" value={1} onActive={this.showCharts.bind(this)}/>
-                  <Tab label="Generate Final Invite" value={2} />
+                  <Tab label="Generate Final Invite" value={2} onActive={this.showText.bind(this)}/>
                 </Tabs>
                 <SwipeableViews
                   index={this.state.slideIndex}
@@ -345,7 +407,7 @@ handleTabChange(value){
                   </div>
                   <div style={styles.slide}>
                  {this.state.showCharts && <div>
-                <label>Attendees</label>
+                <label>Attendees: </label>
                     <PieChart width={730} height={250}>
                   <Pie data={this.state.attendees} dataKey="count" nameKey="name" cx="50%" cy="50%" outerRadius={50} fill="#2ecc71" />
                  <Tooltip />
@@ -358,10 +420,26 @@ handleTabChange(value){
                   <Bar dataKey="count" fill="#8884d8" />
                    <Bar dataKey="people" fill="#8884d8" />
                 </BarChart>
+                <br/>
+                  <BarChart width={730} height={250} data={this.state.resultDateCount} barGap={1}>
+                  <XAxis dataKey="date" />
+                  <Tooltip />
+                  <Bar dataKey="count" fill="#2ecc71" />
+                   <Bar dataKey="people" fill="#2ecc71" />
+                </BarChart>
+                <button onClick={this.showlog.bind(this)}>Click</button>
                 </div>}
                               </div>
                   <div style={styles.slide}>
-                    slide n°3
+                {this.state.showText && 
+                  <div>
+                  
+                  <TextField
+                        fullWidth={true}
+                          defaultValue={`Hi there! Please join me for ${this.state.invite.title} on ${this.state.dateRange} in ${this.state.invite.yelpBizName}.  Would love to see you there!`}
+                          multiLine={true}
+                          floatingLabelText="Invite Template"
+                        /></div>}
                   </div>
                 </SwipeableViews>
               </div>
