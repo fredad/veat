@@ -292,9 +292,9 @@ addAnotherDate(){
             justifyContent: 'space-around',
           },
           gridList: {
-            width: 800,
-            height: 'auto',
-            overflowY: 'auto',
+            display: 'flex',
+            flexWrap: 'nowrap',
+            overflowX: 'auto',
           },
         };
 
@@ -399,7 +399,7 @@ addAnotherDate(){
                 <GridList
                   cellHeight={230}
                   style={styles.gridList}
-                  cols={3}
+                  cols={2.2}
                 >
                   {this.state.selectedBiz.map((option, index) => (
                     
@@ -448,7 +448,7 @@ addAnotherDate(){
                 <GridList
                   cellHeight={180}
                   style={styles.gridList}
-                  cols={3}
+                  cols={2.2}
                 >
             {this.state.showDetailsBiz.photos.map((photo, index) => (
                     <GridTile key={photo.index}>
