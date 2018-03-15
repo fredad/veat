@@ -266,30 +266,30 @@ handleTabChange(value){
     render() {
         let appendResponse;
         if(this.state.response){
-         appendResponse = this.state.response.map((res,index) => {
-            if(res.attend==true){
+         appendResponse = this.state.response.map((response,index) => {
+            if(response.attend==true){
               return (
                 <div>
                <Card>
                 <CardHeader
-                  title={res.name}
+                  title={response.name}
                   subtitle="Attend"
                   avatar="https://t3.ftcdn.net/jpg/00/99/98/24/160_F_99982410_AbK4chh0bTDXinBKn2VPf2JUaHrqjX9j.jpg"
                 />
                 <CardText>
                 <i>
                 <span className="fui-calendar"></span><span>  </span> 
-                {res.availableDate.map((date, index) => (
+                {response.availableDate.map((date, index) => (
                 <span>{date}; </span>
                   ))}
                 <br/>
                 <span className="fui-location"></span><span>  </span> 
-                {res.chosenBiz.map((biz, index) => (
+                {response.chosenBiz.map((biz, index) => (
                 <span>{biz}; </span>
                   ))}
                 </i>
                 <br/>
-                <span className="fui-bubble"></span> <span>  </span> {res.note}
+                <span className="fui-bubble"></span> <span>  </span> {response.note}
                 </CardText>
               </Card>
               <br/>
@@ -301,12 +301,12 @@ handleTabChange(value){
                 <div>
              <Card >
                 <CardHeader
-                  title={res.name}
+                  title={response.name}
                   subtitle="Not Going"
                   avatar="https://upload.wikimedia.org/wikipedia/en/2/26/Disctemp-x.png"
                 />
                 <CardText>
-                 <span className="fui-bubble"></span> <span>  </span> {res.note}
+                 <span className="fui-bubble"></span> <span>  </span> {response.note}
                 </CardText>
               </Card>
               <br/>
