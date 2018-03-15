@@ -12,6 +12,9 @@
 	font-style: italic;
 }
 
+body {
+	background-color: #F6F6F6;
+}
 .navbar{
 	position:fixed;
 	width: 100%;
