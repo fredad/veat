@@ -120,11 +120,8 @@ module.exports = (app, passport) => {
 		    	}
 		    }
 		).then(function(titles){
-				models.Invite.findAll({order: [
-			            ['id', 'DESC']
-			        ]}).then(function(titles){
-						res.json(titles);
-					});
+			console.log(titles)
+			res.json(titles);
 		});
 	});
 
@@ -234,11 +231,8 @@ module.exports = (app, passport) => {
 		    	}
 		    }
 		).then(function(titles){
-				models.Invite.findAll({order: [
-			            ['id', 'DESC']
-			        ]}).then(function(titles){
-						res.json(titles);
-					});
+			console.log(titles)
+			res.json(titles);
 		});
 	});
 
