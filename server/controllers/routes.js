@@ -178,6 +178,9 @@ module.exports = (app, passport) => {
 		    		inviteId: req.params.id,
 		    		attend:true,
 		    		// availableDate:{ $contains: [req.params.date] }
+		    		availableDate:{
+					    $contains: [req.params.date]
+					  }
 
 		    	}
 		    }
