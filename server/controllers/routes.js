@@ -171,17 +171,13 @@ module.exports = (app, passport) => {
 	});
 
 	app.get('/api/get-date-response/:id/:date', (req,res) => {
-		models.Response.findAndCountAll(
+		models.Response.findAll(
 			{
 		    	where: 
 		    	{
 		    		inviteId: req.params.id,
 		    		attend:true,
-		    		// availableDate:{ $contains: [req.params.date] }
-		    		availableDate:{
-					    $contains: [req.params.date]
-					  }
-
+		    		availableDate:{ $contains: [req.params.date] }
 		    	}
 		    }
 		).then(function(names){
