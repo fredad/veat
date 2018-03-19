@@ -3,9 +3,12 @@ var path = require('path');
 var LocalStrategy = require('passport-local').Strategy;
 var bcrypt = require('bcrypt-nodejs');
 
+var Sequelize = require('sequelize');
+
 var models = require('../models');
 
 module.exports = (app, passport) => {
+	const Op = Sequelize.Op;
 
 	app.get('/', function(req,res){
 		res.sendFile(path.join(__dirname, './../../client/public/index.html'));
@@ -177,7 +180,7 @@ module.exports = (app, passport) => {
 		    	{
 		    		inviteId: req.params.id,
 		    		attend:true,
-		    		availableDate:{ $contains: [req.params.date] }
+		    		availableDate:{ [Op.contains]:[req.params.date]}
 		    	}
 		    }
 		).then(function(names){
@@ -209,7 +212,7 @@ module.exports = (app, passport) => {
 		    	{
 		    		inviteId: req.params.id,
 		    		attend:true,
-		    		chosenBiz: { $contains: [req.params.biz] }
+		    		chosenBiz: { [Op.contains]: [req.params.biz] }
 
 		    	}
 		    }

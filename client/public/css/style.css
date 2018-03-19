@@ -23,6 +23,11 @@ body {
 
 }
 
+.responsetile{
+	height: 220px;
+	margin-top: 10px;
+}
+
 .veatlogobcolor {
 	color:#16a085;
 	text-align: center;
