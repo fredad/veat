@@ -81,7 +81,7 @@ Bon Appétit :)
 
 ## Author
 
-* **Freda Du - [LinkedIn](https://www.linkedin.com/in/freda-du-5046438a/)
+* Freda Du - [LinkedIn](https://www.linkedin.com/in/freda-du-5046438a/)
 
 Message me with any questions!
 
