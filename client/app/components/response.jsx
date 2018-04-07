@@ -155,7 +155,7 @@ export default class Response extends Component {
             .then((results) => {
                 var ppl=[];
                 for (var i = 0; i < results.length; i++) { 
-                    ppl.push(results.name)};
+                    ppl.push(results[i].name)};
                 var dateObj = {
                     date:date,
                     count:results.length,

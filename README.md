@@ -2,7 +2,7 @@
 
 http://www.veat.space
 
-Was organizing group dinners also an unnecessarily painstaking experience for you too? Asking what day and what time everyone is available, what food they want and what restaurants they like; scrolling up and down the chat history to find everyone's answers to solve the complicated equation for the optimal date and place... I feel you! So I developed this app to help to make the process easier. :)
+Is organizing group dinners also an unnecessarily painstaking experience for you too? Asking what day and what time everyone is available, what food they want and what restaurants they like; scrolling up and down the chat history to find everyone's answers to solve the complicated equation for the optimal date and place... I feel you! So I developed this app to help to make the process easier. :)
 
 Organizing group dinners is now made easy! 
 
@@ -22,15 +22,15 @@ All the invites you create will be displayed on your home page dashboard. Hostin
 
 Time to create the invite! 
 
-Create your invitation by simply enter the title
+Create your invitation by simply enter the title:
 ```
 Girls Night Out!
 ```
-a brief description
+a brief description:
 ```
 Hey girls, miss you all! Let's get dinner next week! 
 ```
-a date range within which the event is going to happen
+a date range within which the event is going to happen:
 ```
 4-20 to 4-27
 ```
@@ -76,7 +76,7 @@ Bon Appétit :)
 * Yelp API
 * [Material UI](https://material.io/)
 * [Flat UI](http://designmodo.github.io/Flat-UI/)
-* [ReCharts](https://github.com/recharts/recharts) - a data visualization tool
+* [Recharts](https://github.com/recharts/recharts)
 * [Zip Code API](https://www.zipcodeapi.com/API)
 
 ## Author
