@@ -6,7 +6,7 @@ Was organizing group dinners also an unnecessarily painstaking experience for yo
 
 Organizing group dinners is now made easy! 
 
-### Step by Step 
+## Step by Step 
 
 ### Log in/Sign up
 
