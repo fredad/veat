@@ -15,6 +15,10 @@ export default class SignUp extends Component {
             alert('Please fill in all fields');
             return;
         }
+        if (this.refs.password.value.length<8){
+          alert('Password must be 8 digit or longer');
+            return;
+        }
     	var newUser = {
     		name: this.refs.name.value,
     		username: this.refs.username.value,
