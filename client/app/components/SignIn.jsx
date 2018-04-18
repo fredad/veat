@@ -1,5 +1,8 @@
 import React, { Component } from 'react';
 import { Link, browserHistory } from 'react-router';
+import {Modal, ModalHeader, ModalTitle, ModalClose, ModalBody, ModalFooter} from 'react-modal-bootstrap';
+import Dialog from 'material-ui/Dialog';
+import FlatButton from 'material-ui/FlatButton';
 import Logout from './Logout';
 
 export default class SignIn extends Component {
@@ -45,6 +48,16 @@ export default class SignIn extends Component {
         });
 	}
 
+  showdemo(){
+      this.setState({
+            isOpen:true,
+        })
+  }
+  hideModal(){
+          this.setState({
+            isOpen:false,
+        })
+  }
     componentDidMount(){
         fetch('/api/signed-in', {
             headers: {
@@ -60,6 +73,8 @@ export default class SignIn extends Component {
         });
     }
   	render() {
+
+
 
 	    return (
 	        <div className="signinpage">   
@@ -96,10 +111,24 @@ export default class SignIn extends Component {
             </div>
 
             <input className="btn btn-primary btn-lg btn-block"  type="submit" />
+            
             <a className="login-link" href="/signup">Don't have an account? Please sign up</a>
+
           </div>
           </form>
+          <br/>
+          <button className="btn btn-block btn-lg btn-info" onClick={this.showdemo.bind(this)}>Watch Demo</button>
         </div>
+        <br/>
+        
+                <Dialog
+          modal={false}
+          onRequestClose={this.hideModal.bind(this)}
+          open={this.state.isOpen}
+        >
+
+<iframe width="600" height="337" src="https://www.youtube.com/embed/Da7OhiJBg-E" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+        </Dialog>
           
           <br/>
           <br/>
