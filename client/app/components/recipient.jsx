@@ -136,7 +136,9 @@ export default class Recipient extends Component {
 
      }).then(()=>{
       var minDateObj = new Date(this.state.invite.dateStart);
+      minDateObj.setDate(minDateObj.getDate() + 1);
       var maxDateObj = new Date(this.state.invite.dateEnd);
+      maxDateObj.setDate(maxDateObj.getDate() + 1);
       this.setState({
         dateObj:{
           minDate:minDateObj,
